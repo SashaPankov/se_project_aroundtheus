@@ -22,4 +22,4 @@ Good luck and have fun!
 
 **Github**
 
-- [Here you can see it] https://SashaPankov.github.io/se_project_aroundtheus/
+- [Here you can see it](https://SashaPankov.github.io/se_project_aroundtheus)
