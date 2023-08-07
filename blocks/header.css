@@ -1,6 +1,6 @@
 .header {
-  border-bottom: 1px solid #545454;
   height: 74px;
+  border-bottom: 1px solid #545454;
 }
 
 .header__logo {
@@ -11,10 +11,13 @@
 @media screen and (max-width: 320px) {
   .header {
     height: 56px;
+    max-width: 100%;
+    margin: 0;
   }
 
   .header__logo {
     width: 126px;
     height: 24px;
+    padding-left: 20px;
   }
 }

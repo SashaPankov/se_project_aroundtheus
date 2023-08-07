@@ -57,9 +57,3 @@
   transition: 0.3s linear;
   opacity: 0.5;
 }
-
-@media screen and (max-width: 580px) {
-  .cards__list {
-    padding: 15px 0 18px;
-  }
-}
