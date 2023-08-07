@@ -85,7 +85,6 @@
 @media screen and (max-width: 480px) {
   .profile {
     flex-direction: column;
-    background-color: pink;
   }
   .profile__info {
     display: flex;
