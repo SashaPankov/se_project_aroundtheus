@@ -2,7 +2,9 @@
   font-family: "Inter", Arial, sans-serif;
   background-color: #000;
   color: #fff;
-  margin: 45px auto 60px;
+  margin: 0 auto;
+  padding-top: 45px;
+  padding-bottom: 60px;
 }
 
 .page__section {
@@ -27,7 +29,8 @@
 
 @media screen and (max-width: 320px) {
   .page {
-    margin: 28px auto 36px;
+    padding-top: 28px;
+    padding-bottom: 36px;
   }
   .page__section {
     max-width: 282px;
