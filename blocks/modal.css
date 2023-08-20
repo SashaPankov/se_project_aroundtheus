@@ -78,6 +78,12 @@
   font-family: "Inter", Arial, sans-serif;
   font-size: 18px;
   font-weight: 400;
+  cursor: pointer;
+}
+
+.modal__button:hover {
+  transition: 0.2s linear;
+  opacity: 0.8;
 }
 
 @media screen and (max-width: 730px) {
