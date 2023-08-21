@@ -12,7 +12,7 @@
   line-height: normal;
 }
 
-.modal__opened {
+.modal_opened {
   display: flex;
 }
 
