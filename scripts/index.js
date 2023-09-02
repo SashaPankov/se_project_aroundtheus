@@ -38,8 +38,8 @@ const profileDescriptionInput = document.querySelector(
 const profileEditForm = document.forms["profile-edit-form"];
 const cardTemplate = document.querySelector("#card-template").content;
 const cardsList = document.querySelector(".cards__list");
+const profileAddButton = document.querySelector("#profile-add-button");
 
-const cardAddButton = document.querySelector("#card-add-button");
 const cardCloseButton = document.querySelector("#card-close-button");
 const cardAddModal = document.querySelector("#card-add-modal");
 const cardTitleInput = document.querySelector("#card-title-input");
@@ -127,7 +127,7 @@ profileEditButton.addEventListener("click", () => {
 profileCloseButton.addEventListener("click", closePopup);
 profileEditForm.addEventListener("submit", handleProfileEditModalSubmit);
 
-cardAddButton.addEventListener("click", () => {
+profileAddButton.addEventListener("click", () => {
   cardTitleInput.value = "Title";
   cardImageURLInput.value = "Image URL";
   cardAddModal.classList.add("modal_opened");
