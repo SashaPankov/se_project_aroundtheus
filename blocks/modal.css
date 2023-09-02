@@ -5,15 +5,19 @@
   bottom: 0;
   right: 0;
   z-index: 999;
-  display: none;
+  display: flex;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 0 19px;
   color: #000;
   line-height: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s linear, visibility 0.4s linear;
 }
 
 .modal_opened {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 .modal__container {
@@ -23,6 +27,28 @@
   border-radius: 10px;
   position: relative;
   box-shadow: 0px 0px 25px 0px rgba(0, 0, 0, 0.15);
+}
+
+.modal__image-container {
+  margin: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__image {
+  margin: auto;
+  max-width: 75vw;
+  max-height: 75vh;
+}
+
+.modal__card-title {
+  max-width: 291px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  padding-top: 10px;
 }
 
 .modal__heading {
@@ -91,6 +117,13 @@
     left: auto;
     right: 0;
   }
+
+  .modal__image-close {
+    width: 30px;
+    height: 30px;
+    bottom: calc(100% + 5px);
+    left: calc(100% + 5px);
+  }
 }
 
 @media screen and (max-width: 320px) {
@@ -112,5 +145,12 @@
   .modal__button {
     width: 238px;
     height: 46px;
+  }
+
+  .modal__image-close {
+    width: 30px;
+    height: 30px;
+    bottom: calc(100% + 5px);
+    left: calc(100% + 5px);
   }
 }
