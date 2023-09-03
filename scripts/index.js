@@ -27,7 +27,6 @@ const initialCards = [
 
 // Elements
 const profileEditButton = document.querySelector("#profile-edit-button");
-const profileCloseButton = document.querySelector("#profile-close-button");
 const profileEditModal = document.querySelector("#profile-edit-modal");
 const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
@@ -40,7 +39,6 @@ const cardTemplate = document.querySelector("#card-template").content;
 const cardsList = document.querySelector(".cards__list");
 const profileAddButton = document.querySelector("#profile-add-button");
 
-const cardCloseButton = document.querySelector("#card-close-button");
 const cardAddModal = document.querySelector("#card-add-modal");
 const cardTitleInput = document.querySelector("#card-title-input");
 const cardImageURLInput = document.querySelector("#card-imageURL-input");
@@ -48,20 +46,15 @@ const cardAddForm = document.forms["card-add-form"];
 
 const cardImageModal = document.querySelector("#image-view-modal");
 const modalImage = document.querySelector(".modal__image");
-const imageCloseButton = document.querySelector("#image-close-button");
 const modalCardTitle = document.querySelector(".modal__card-title");
 
 // Functions
-function closePopup(evt) {
-  if (cardImageModal.classList.contains("modal_opened")) {
-    cardImageModal.classList.remove("modal_opened");
-    return;
-  }
+function openPopup(popup) {
+  popup.classList.add("modal_opened");
+}
 
-  (profileEditModal.classList.contains("modal_opened")
-    ? profileEditModal
-    : cardAddModal
-  ).classList.remove("modal_opened");
+function closePopup(popup) {
+  popup.classList.remove("modal_opened");
 }
 
 function getCardElement(cardData) {
@@ -86,27 +79,25 @@ function handleProfileEditModalSubmit(evt) {
 
   profileTitle.textContent = profileTitleInput.value;
   profileDescription.textContent = profileDescriptionInput.value;
-  closePopup();
+  closePopup(profileEditModal);
 }
 
 function handleCardAddModalSubmit(evt) {
   evt.preventDefault();
   const newCard = { name: cardTitleInput.value, link: cardImageURLInput.value };
-
   cardsList.prepend(getCardElement(newCard));
-  closePopup();
+  closePopup(cardAddModal);
+  // Yes, I understood about reset function, but actually I didn't quite catch why we need to use it here,
+  // cause in general we don't need to clear inputs at submit, I suppose. Am I mistaking?
+  evt.target.reset();
 }
 
 function changeLike(evt) {
-  evt.target.style.backgroundImage = evt.target.style.backgroundImage.includes(
-    "inactive"
-  )
-    ? "url('../images/like-active.svg')"
-    : "url('../images/like-inactive.svg')";
+  evt.target.classList.toggle("card__like-button_active");
 }
 
 function deleteCard(evt) {
-  evt.target.parentElement.remove();
+  evt.target.closest(".card").remove();
 }
 
 function showImageModal(evt) {
@@ -114,28 +105,32 @@ function showImageModal(evt) {
   modalImage.alt = evt.target.alt;
   modalCardTitle.textContent = evt.target.alt;
 
-  cardImageModal.classList.add("modal_opened");
+  openPopup(cardImageModal);
 }
 
 // Event Listeners
+const closeButtons = document.querySelectorAll(".modal__close");
+
+closeButtons.forEach((button) => {
+  const modal = button.closest(".modal");
+  button.addEventListener("click", () => closePopup(modal));
+});
+
 profileEditButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
-  profileEditModal.classList.add("modal_opened");
+  openPopup(profileEditModal);
 });
 
-profileCloseButton.addEventListener("click", closePopup);
 profileEditForm.addEventListener("submit", handleProfileEditModalSubmit);
 
 profileAddButton.addEventListener("click", () => {
-  cardTitleInput.value = "Title";
-  cardImageURLInput.value = "Image URL";
-  cardAddModal.classList.add("modal_opened");
+  cardTitleInput.value = "";
+  cardImageURLInput.value = "";
+  openPopup(cardAddModal);
 });
-cardCloseButton.addEventListener("click", closePopup);
-cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
 
-imageCloseButton.addEventListener("click", closePopup);
+cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
 
 // cards filling
 initialCards.forEach((cardData) => {
