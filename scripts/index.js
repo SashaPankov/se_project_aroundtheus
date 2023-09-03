@@ -125,8 +125,6 @@ profileEditButton.addEventListener("click", () => {
 profileEditForm.addEventListener("submit", handleProfileEditModalSubmit);
 
 profileAddButton.addEventListener("click", () => {
-  cardTitleInput.value = "";
-  cardImageURLInput.value = "";
   openPopup(cardAddModal);
 });
 
