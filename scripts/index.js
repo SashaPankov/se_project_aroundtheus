@@ -55,6 +55,26 @@ function openPopup(popup) {
 
 function closePopup(popup) {
   popup.classList.remove("modal_opened");
+  const frm = popup.querySelector(".modal__form");
+  if (frm !== null) {
+    const errorElementList = [...frm.querySelectorAll(".modal__field-error")];
+    errorElementList.forEach((errorElement) => {
+      errorElement.classList.remove("modal__field-error_visible");
+      errorElement.textContent = "";
+    });
+    [...frm.querySelectorAll(".modal__field")].forEach((fld) =>
+      fld.classList.remove("modal__field_error")
+    );
+    frmButton = frm.querySelector(".modal__button");
+    if (frm === profileEditForm) {
+      frmButton.classList.remove("modal__button_disabled");
+      frmButton.disabled = false;
+    } else {
+      frmButton.classList.add("modal__button_disabled");
+      frmButton.disabled = true;
+    }
+    frm.reset();
+  }
 }
 
 function getCardElement(cardData) {
@@ -87,9 +107,6 @@ function handleCardAddModalSubmit(evt) {
   const newCard = { name: cardTitleInput.value, link: cardImageURLInput.value };
   cardsList.prepend(getCardElement(newCard));
   closePopup(cardAddModal);
-  // Yes, I understood about reset function, but actually I didn't quite catch why we need to use it here,
-  // cause in general we don't need to clear inputs at submit, I suppose. Am I mistaking?
-  evt.target.reset();
 }
 
 function changeLike(evt) {
@@ -129,6 +146,34 @@ profileAddButton.addEventListener("click", () => {
 });
 
 cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
+
+[...document.querySelectorAll(".modal")].forEach((modal) => {
+  modal.addEventListener("click", function (evt) {
+    if (evt.target.classList.contains("modal")) {
+      closePopup(evt.target);
+    }
+  });
+  modal.addEventListener("keydown", (evt) => {
+    if (evt.key === "Escape") {
+      closePopup(evt.target);
+    }
+  });
+});
+
+document.body.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    popup = document.querySelector(".modal_opened");
+    if (popup !== null) {
+      closePopup(popup);
+    }
+  }
+});
+
+cardAddForm.addEventListener("click", function (evt) {
+  if (evt.target.classList.contains("modal")) {
+    closePopup(evt.target);
+  }
+});
 
 // cards filling
 initialCards.forEach((cardData) => {
