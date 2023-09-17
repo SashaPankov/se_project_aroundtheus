@@ -62,17 +62,6 @@
   margin: auto;
 }
 
-.modal__field-error {
-  margin: 0;
-  display: block;
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.modal__field-error {
-  color: #f00;
-}
-
 .modal__button-design-gap {
   height: 48px;
 }
@@ -89,8 +78,11 @@
   width: 100%;
 }
 
-.modal__field_error {
+.modal__field-error {
+  color: #f00;
+  font-size: 12px;
   border-bottom-color: #f00;
+  font-weight: 400;
 }
 
 .modal__form {
