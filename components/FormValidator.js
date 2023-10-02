@@ -73,16 +73,10 @@ export default class FormValidator {
     this._disableButton();
   }
 
-  resetValidation(isButtonDisable) {
-    this._inputList.forEach((fld) =>
-      fld.classList.remove("modal__field_error")
+  resetValidation() {
+    this._inputList.forEach((inputElement) =>
+      this._hideInputError(inputElement)
     );
-    this._formElement
-      .querySelectorAll(".modal__field-error")
-      .forEach((errorElement) => {
-        errorElement.classList.remove("modal__field-error_visible");
-        errorElement.textContent = "";
-      });
-    if (isButtonDisable) this._disableButton();
+    this._disableButton();
   }
 }

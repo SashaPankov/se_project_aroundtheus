@@ -37,7 +37,7 @@ const config = {
   errorClass: "modal__field-error_visible",
 };
 
-const validators = [];
+const formValidators = {};
 
 // Elements
 const profileEditButton = document.querySelector("#profile-edit-button");
@@ -61,7 +61,14 @@ const cardImageModal = document.querySelector("#image-view-modal");
 const modalImage = document.querySelector(".modal__image");
 const modalCardTitle = document.querySelector(".modal__card-title");
 
+const formList = [...document.querySelectorAll(config.formSelector)];
+
 // Functions
+function createCard(cardData) {
+  const newCard = new Card(cardData, "card-template", showImageModal);
+  return newCard.getCardElement();
+}
+
 function closeByEscape(evt) {
   if (evt.key === "Escape") {
     const openedPopup = document.querySelector(".modal_opened");
@@ -79,13 +86,25 @@ function openPopup(popup) {
 function closePopup(popup) {
   popup.classList.remove("modal_opened");
   document.removeEventListener("keydown", closeByEscape);
-  const formElement = popup.querySelector(config.formSelector);
-  if (!(formElement === null)) {
-    const formValidator = validators.find(
-      ({ formName }) => formName === formElement.name
-    ).formValidator;
-    formValidator.resetValidation(formElement === profileEditForm);
+}
+
+function addProfileEditPopup() {
+  profileTitleInput.value = profileTitle.textContent;
+  profileDescriptionInput.value = profileDescription.textContent;
+  formValidators[profileEditForm.getAttribute("name")].resetValidation();
+  openPopup(profileEditModal);
+}
+
+function addCardPopup() {
+  const isInputsEmpty = [
+    ...cardAddForm.querySelectorAll(config.inputSelector),
+  ].every((inputElement) => {
+    return inputElement.value === "";
+  });
+  if (isInputsEmpty) {
+    formValidators[cardAddForm.getAttribute("name")].resetValidation();
   }
+  openPopup(cardAddModal);
 }
 
 // Event Handlers
@@ -96,14 +115,13 @@ function handleProfileEditModalSubmit(evt) {
 }
 
 function handleCardAddModalSubmit(evt) {
-  const newCard = new Card(
-    { name: cardTitleInput.value, link: cardImageURLInput.value },
-    "card-template",
-    showImageModal
-  );
-  cardsList.prepend(newCard.getCardElement());
+  const cardElement = createCard({
+    name: cardTitleInput.value,
+    link: cardImageURLInput.value,
+  });
+  cardsList.prepend(cardElement);
   closePopup(cardAddModal);
-  evt.target.reset();
+  cardAddForm.reset();
 }
 
 export function showImageModal(card) {
@@ -115,24 +133,16 @@ export function showImageModal(card) {
 }
 
 // Event Listeners
-[...document.querySelectorAll(config.formSelector)].forEach((formElement) => {
+formList.forEach((formElement) => {
   formElement.addEventListener("submit", (evt) => {
     evt.preventDefault();
   });
 });
 
-profileEditButton.addEventListener("click", () => {
-  profileTitleInput.value = profileTitle.textContent;
-  profileDescriptionInput.value = profileDescription.textContent;
-  openPopup(profileEditModal);
-});
-
+profileEditButton.addEventListener("click", addProfileEditPopup);
 profileEditForm.addEventListener("submit", handleProfileEditModalSubmit);
 
-profileAddButton.addEventListener("click", () => {
-  openPopup(cardAddModal);
-});
-
+profileAddButton.addEventListener("click", addCardPopup);
 cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
 
 [...document.querySelectorAll(".modal")].forEach((modal) => {
@@ -148,14 +158,17 @@ cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
 
 // cards filling
 initialCards.forEach((cardData) => {
-  const newCard = new Card(cardData, "card-template", showImageModal);
-  cardsList.append(newCard.getCardElement());
+  const cardElement = createCard(cardData);
+  cardsList.append(cardElement);
 });
 
 // adding validation to forms
-[...document.querySelectorAll(config.formSelector)].forEach((formElement) => {
-  const formValidator = new FormValidator(config, formElement);
-  formValidator.enableValidation();
-  const formName = formElement.name;
-  validators.push({ formName, formValidator });
-});
+const enableValidation = (config) => {
+  formList.forEach((formElement) => {
+    const formValidator = new FormValidator(config, formElement);
+    formValidators[formElement.getAttribute("name")] = formValidator;
+    formValidator.enableValidation();
+  });
+};
+
+enableValidation(config);
