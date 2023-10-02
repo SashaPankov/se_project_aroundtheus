@@ -140,7 +140,7 @@ export class AddLocationFormValidator extends FormValidator {
     const newCard = new Card(
       { name: this._cardTitleInput.value, link: this._cardImageURLInput.value },
       "card-template",
-      showImageModalFromCard
+      showImageModal
     );
     document.querySelector(".cards__list").prepend(newCard.getCardElement());
     super._handleModalSubmit(evt);
