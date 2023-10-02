@@ -1,8 +1,5 @@
 import Card from "../components/Card.js";
-import {
-  EditProfileFormValidator,
-  AddLocationFormValidator,
-} from "../components/FormValidator.js";
+import FormValidator from "../components/FormValidator.js";
 
 const initialCards = [
   {
@@ -40,6 +37,8 @@ const config = {
   errorClass: "modal__field-error_visible",
 };
 
+const validators = [];
+
 // Elements
 const profileEditButton = document.querySelector("#profile-edit-button");
 const profileEditModal = document.querySelector("#profile-edit-modal");
@@ -54,6 +53,9 @@ const cardsList = document.querySelector(".cards__list");
 const profileAddButton = document.querySelector("#profile-add-button");
 
 const cardAddModal = document.querySelector("#card-add-modal");
+const cardAddForm = document.forms["card-add-form"];
+const cardTitleInput = document.querySelector("#card-title-input");
+const cardImageURLInput = document.querySelector("#card-imageURL-input");
 
 const cardImageModal = document.querySelector("#image-view-modal");
 const modalImage = document.querySelector(".modal__image");
@@ -71,16 +73,37 @@ function closeByEscape(evt) {
 
 function openPopup(popup) {
   popup.classList.add("modal_opened");
+  document.addEventListener("keydown", closeByEscape);
 }
 
 function closePopup(popup) {
   popup.classList.remove("modal_opened");
+  document.removeEventListener("keydown", closeByEscape);
+  const formElement = popup.querySelector(config.formSelector);
+  if (!(formElement === null)) {
+    const formValidator = validators.find(
+      ({ formName }) => formName === formElement.name
+    ).formValidator;
+    formValidator.resetValidation(formElement === profileEditForm);
+  }
 }
 
 // Event Handlers
 function handleProfileEditModalSubmit(evt) {
   profileTitle.textContent = profileTitleInput.value;
   profileDescription.textContent = profileDescriptionInput.value;
+  closePopup(profileEditModal);
+}
+
+function handleCardAddModalSubmit(evt) {
+  const newCard = new Card(
+    { name: cardTitleInput.value, link: cardImageURLInput.value },
+    "card-template",
+    showImageModal
+  );
+  cardsList.prepend(newCard.getCardElement());
+  closePopup(cardAddModal);
+  evt.target.reset();
 }
 
 export function showImageModal(card) {
@@ -89,10 +112,15 @@ export function showImageModal(card) {
   modalImage.alt = modalCardTitle.textContent;
 
   openPopup(cardImageModal);
-  document.addEventListener("keydown", closeByEscape);
 }
 
 // Event Listeners
+[...document.querySelectorAll(config.formSelector)].forEach((formElement) => {
+  formElement.addEventListener("submit", (evt) => {
+    evt.preventDefault();
+  });
+});
+
 profileEditButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
@@ -105,27 +133,29 @@ profileAddButton.addEventListener("click", () => {
   openPopup(cardAddModal);
 });
 
-cardImageModal.addEventListener("mousedown", (evt) => {
-  if (
-    evt.target.classList.contains("modal_opened") ||
-    evt.target.classList.contains("modal__close")
-  ) {
-    closePopup(cardImageModal);
-    document.removeEventListener("keydown", closeByEscape);
-  }
+cardAddForm.addEventListener("submit", handleCardAddModalSubmit);
+
+[...document.querySelectorAll(".modal")].forEach((modal) => {
+  modal.addEventListener("mousedown", (evt) => {
+    if (
+      evt.target.classList.contains("modal_opened") ||
+      evt.target.classList.contains("modal__close")
+    ) {
+      closePopup(modal);
+    }
+  });
 });
 
 // cards filling
 initialCards.forEach((cardData) => {
-  const card = new Card(cardData, "card-template", showImageModal);
-  cardsList.append(card.getCardElement());
+  const newCard = new Card(cardData, "card-template", showImageModal);
+  cardsList.append(newCard.getCardElement());
 });
 
 // adding validation to forms
 [...document.querySelectorAll(config.formSelector)].forEach((formElement) => {
-  const formValidator =
-    formElement.name === "profile-edit-form"
-      ? new EditProfileFormValidator(config, formElement)
-      : new AddLocationFormValidator(config, formElement);
+  const formValidator = new FormValidator(config, formElement);
   formValidator.enableValidation();
+  const formName = formElement.name;
+  validators.push({ formName, formValidator });
 });

@@ -1,7 +1,4 @@
-import Card from "../components/Card.js";
-import { showImageModal } from "../pages/index.js";
-
-export class FormValidator {
+export default class FormValidator {
   constructor(config, formElement) {
     this._config = config;
     this._formElement = formElement;
@@ -11,7 +8,6 @@ export class FormValidator {
     this._buttonElement = this._formElement.querySelector(
       this._config.submitButtonSelector
     );
-    this._popup = this._formElement.closest(".modal");
   }
 
   _showInputError(inputElement) {
@@ -64,56 +60,20 @@ export class FormValidator {
   }
 
   _setEventListeners() {
-    this._formElement.addEventListener("submit", (evt) => {
-      this._handleModalSubmit(evt);
-    });
-
     this._inputList.forEach((inputElement) => {
       inputElement.addEventListener("input", () => {
         this._checkInputValidity(inputElement);
         this._toggleButtonState();
       });
     });
-
-    document.addEventListener("keydown", (evt) => {
-      this._closeByEscape(evt);
-    });
-
-    this._popup.addEventListener("mousedown", (evt) => {
-      this._handleMouseDown(evt);
-    });
-  }
-
-  _handleMouseDown(evt) {
-    if (evt.target.classList.contains("modal_opened")) {
-      this._closePopup();
-    }
-    if (evt.target.classList.contains("modal__close")) {
-      this._closePopup();
-    }
-  }
-
-  _closeByEscape(evt) {
-    if (evt.key === "Escape") {
-      this._closePopup();
-    }
-  }
-
-  _closePopup() {
-    this._popup.classList.remove("modal_opened");
-    document.removeEventListener("keydown", this._closeByEscape);
-  }
-
-  _handleModalSubmit(evt) {
-    evt.preventDefault();
-    this._closePopup();
   }
 
   enableValidation() {
     this._setEventListeners();
+    this._disableButton();
   }
 
-  resetValidation() {
+  resetValidation(isButtonDisable) {
     this._inputList.forEach((fld) =>
       fld.classList.remove("modal__field_error")
     );
@@ -123,39 +83,6 @@ export class FormValidator {
         errorElement.classList.remove("modal__field-error_visible");
         errorElement.textContent = "";
       });
-    this._disableButton();
-  }
-}
-
-export class AddLocationFormValidator extends FormValidator {
-  constructor(config, formElement) {
-    super(config, formElement);
-    this._cardTitleInput = this._formElement.querySelector("#card-title-input");
-    this._cardImageURLInput = this._formElement.querySelector(
-      "#card-imageURL-input"
-    );
-  }
-
-  _handleModalSubmit(evt) {
-    const newCard = new Card(
-      { name: this._cardTitleInput.value, link: this._cardImageURLInput.value },
-      "card-template",
-      showImageModal
-    );
-    document.querySelector(".cards__list").prepend(newCard.getCardElement());
-    super._handleModalSubmit(evt);
-    this._formElement.reset();
-    this._disableButton();
-  }
-}
-
-export class EditProfileFormValidator extends FormValidator {
-  constructor(config, formElement) {
-    super(config, formElement);
-  }
-
-  _closePopup() {
-    super._closePopup();
-    this.resetValidation();
+    if (isButtonDisable) this._disableButton();
   }
 }
