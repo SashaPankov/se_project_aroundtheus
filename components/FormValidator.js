@@ -81,8 +81,8 @@ export default class FormValidator {
   }
 
   areInputsEmpty() {
-    this._inputList.every((inputElement) => {
-      return inputElement.value === "";
+    return this._inputList.every((inputElement) => {
+      return inputElement.value.length === 0;
     });
   }
 }

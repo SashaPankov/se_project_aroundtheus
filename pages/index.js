@@ -96,12 +96,6 @@ function addProfileEditPopup() {
 }
 
 function addCardPopup() {
-  // Thank you for pointing to single responsibility principle. Fixed this I suppose.
-  // And I'm checking are inputs empty because here I'm trying following the task and fix issue from previous review:
-  // 1.task (about Card form): "When the form is closed, but not submitted, it provides a better user experience
-  //          to leave the form fields as they are, so as to prevent lost data."
-  // 2. prev review: "You need to disable the submit button in the addCardPopup
-  //                  if the inputs are empty when you open it."
   if (formValidators[cardAddForm.getAttribute("name")].areInputsEmpty()) {
     formValidators[cardAddForm.getAttribute("name")].resetValidation();
   }
