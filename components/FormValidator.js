@@ -79,4 +79,10 @@ export default class FormValidator {
     );
     this._disableButton();
   }
+
+  areInputsEmpty() {
+    this._inputList.every((inputElement) => {
+      return inputElement.value === "";
+    });
+  }
 }
