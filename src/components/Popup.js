@@ -32,14 +32,5 @@ export default class Popup {
         this.close();
       }
     });
-
-    this._popup.addEventListener("click", (evt) => {
-      if (
-        evt.target.classList.contains("modal_opened") ||
-        evt.target.classList.contains("modal__close")
-      ) {
-        this.close();
-      }
-    });
   }
 }

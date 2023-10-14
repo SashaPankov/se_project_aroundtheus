@@ -13,21 +13,11 @@ const formValidators = {};
 const profileEditButton = document.querySelector(
   config.profileEditButtonSelector
 );
-const profileTitleInput = document.querySelector(
-  config.profileTitleInputSelector
-);
-const profileDescriptionInput = document.querySelector(
-  config.profileDescriptionInputSelector
-);
 
 const profileEditForm = document.forms[config.profileEditForm];
 const profileAddButton = document.querySelector(config.cardAddButtonSelector);
 
 const cardAddForm = document.forms[config.cardAddForm];
-const cardTitleInput = document.querySelector(config.cardTitleInputSelector);
-const cardImageURLInput = document.querySelector(
-  config.cardImageURLInputSelector
-);
 
 const formList = [...document.querySelectorAll(config.formSelector)];
 
@@ -41,9 +31,7 @@ function createCard(cardData) {
 }
 
 function addProfileEditPopup() {
-  const userData = userInfo.getUserInfo();
-  profileTitleInput.value = userData.name;
-  profileDescriptionInput.value = userData.description;
+  profilePopup.setInputValues(userInfo.getUserInfo());
   formValidators[profileEditForm.getAttribute("name")].resetValidation();
   profilePopup.open();
 }
@@ -58,12 +46,6 @@ export function showImageModal(card) {
 }
 
 // Event Listeners
-formList.forEach((formElement) => {
-  formElement.addEventListener("submit", (evt) => {
-    evt.preventDefault();
-  });
-});
-
 profileEditButton.addEventListener("click", addProfileEditPopup);
 profileAddButton.addEventListener("click", addCardPopup);
 
@@ -75,19 +57,13 @@ const imagePopup = new PopupWithImage(config.popupImageSelector);
 imagePopup.setEventListeners();
 
 const profilePopup = new PopupWithForm(config.popupProfileSelector, () => {
-  userInfo.setUserInfo({
-    newName: profileTitleInput.value,
-    newDescription: profileDescriptionInput.value,
-  });
+  userInfo.setUserInfo(profilePopup._getInputValues());
   profilePopup.close();
 });
 profilePopup.setEventListeners();
 
 const cardPopup = new PopupWithForm(config.popupAddCardSelector, () => {
-  const cardElement = createCard({
-    name: cardTitleInput.value,
-    link: cardImageURLInput.value,
-  });
+  const cardElement = createCard(cardPopup._getInputValues());
   cardList.addItem(cardElement, false);
   cardPopup.close();
 });
@@ -107,6 +83,9 @@ cardList.renderItems();
 // adding validation to forms
 const enableValidation = (config) => {
   formList.forEach((formElement) => {
+    formElement.addEventListener("submit", (evt) => {
+      evt.preventDefault();
+    });
     const formValidator = new FormValidator(config, formElement);
     formValidators[formElement.getAttribute("name")] = formValidator;
     formValidator.enableValidation();
