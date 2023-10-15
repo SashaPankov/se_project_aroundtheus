@@ -1,4 +1,13 @@
-import { initialCards, config } from "../utils/utils.js";
+import {
+  initialCards,
+  config,
+  formValidators,
+  profileEditButton,
+  profileEditForm,
+  profileAddButton,
+  cardAddForm,
+  formList,
+} from "../utils/utils.js";
 import Card from "../components/Card.js";
 import FormValidator from "../components/FormValidator.js";
 import Section from "../components/Section.js";
@@ -7,63 +16,50 @@ import PopupWithForm from "../components/PopupWithForm.js";
 import UserInfo from "../components/UserInfo.js";
 import "./index.css";
 
-const formValidators = {};
-
-// Elements
-const profileEditButton = document.querySelector(
-  config.profileEditButtonSelector
-);
-
-const profileEditForm = document.forms[config.profileEditForm];
-const profileAddButton = document.querySelector(config.cardAddButtonSelector);
-
-const cardAddForm = document.forms[config.cardAddForm];
-
-const formList = [...document.querySelectorAll(config.formSelector)];
-
-// Functions
-function createCard(cardData) {
+const createCard = (cardData) => {
   const newCard = new Card(
     { data: cardData, handleCardClick: showImageModal },
     config.cardSelector
   );
   return newCard.getCardElement();
-}
+};
 
-function addProfileEditPopup() {
+const addProfileEditPopup = () => {
   profilePopup.setInputValues(userInfo.getUserInfo());
   formValidators[profileEditForm.getAttribute("name")].resetValidation();
   profilePopup.open();
-}
+};
 
-function addCardPopup() {
+const addCardPopup = () => {
   formValidators[cardAddForm.getAttribute("name")].resetValidation();
   cardPopup.open();
-}
+};
 
-export function showImageModal(card) {
+const showImageModal = (card) => {
   imagePopup.open(card.getImageLink(), card.getName());
-}
+};
 
 // Event Listeners
 profileEditButton.addEventListener("click", addProfileEditPopup);
 profileAddButton.addEventListener("click", addCardPopup);
 
 // creating class instances and initializing
-
 const userInfo = new UserInfo(config);
 
 const imagePopup = new PopupWithImage(config.popupImageSelector);
 imagePopup.setEventListeners();
 
-const profilePopup = new PopupWithForm(config.popupProfileSelector, () => {
-  userInfo.setUserInfo(profilePopup._getInputValues());
-  profilePopup.close();
-});
+const profilePopup = new PopupWithForm(
+  config.popupProfileSelector,
+  (userData) => {
+    userInfo.setUserInfo(userData);
+    profilePopup.close();
+  }
+);
 profilePopup.setEventListeners();
 
-const cardPopup = new PopupWithForm(config.popupAddCardSelector, () => {
-  const cardElement = createCard(cardPopup._getInputValues());
+const cardPopup = new PopupWithForm(config.popupAddCardSelector, (cardData) => {
+  const cardElement = createCard(cardData);
   cardList.addItem(cardElement, false);
   cardPopup.close();
 });

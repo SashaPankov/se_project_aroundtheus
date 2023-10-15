@@ -1,3 +1,5 @@
+import Card from "../components/Card.js";
+
 export const ESC_NAME = "Escape";
 export const initialCards = [
   {
@@ -52,3 +54,17 @@ export const config = {
   popupAddCardSelector: "card-add-modal",
   buttonCloseSelector: ".modal__close",
 };
+
+export const formValidators = {};
+
+// Elements
+export const profileEditButton = document.querySelector(
+  config.profileEditButtonSelector
+);
+
+export const profileEditForm = document.forms[config.profileEditForm];
+export const profileAddButton = document.querySelector(
+  config.cardAddButtonSelector
+);
+export const cardAddForm = document.forms[config.cardAddForm];
+export const formList = [...document.querySelectorAll(config.formSelector)];
