@@ -14,18 +14,22 @@ export default class FormValidator {
     const errorElement = this._formElement.querySelector(
       `#${inputElement.id}-error`
     );
-    inputElement.classList.add(this._config.inputErrorClass);
-    errorElement.classList.add(this._config.errorClass);
-    errorElement.textContent = inputElement.validationMessage;
+    if (!(errorElement === undefined)) {
+      inputElement.classList.add(this._config.inputErrorClass);
+      errorElement.classList.add(this._config.errorClass);
+      errorElement.textContent = inputElement.validationMessage;
+    }
   }
 
   _hideInputError(inputElement) {
     const errorElement = this._formElement.querySelector(
       `#${inputElement.id}-error`
     );
-    inputElement.classList.remove(this._config.inputErrorClass);
-    errorElement.classList.remove(this._config.errorClass);
-    errorElement.textContent = "";
+    if (!(errorElement === undefined)) {
+      inputElement.classList.remove(this._config.inputErrorClass);
+      errorElement.classList.remove(this._config.errorClass);
+      errorElement.textContent = "";
+    }
   }
 
   _checkInputValidity(inputElement) {
