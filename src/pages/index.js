@@ -86,7 +86,7 @@ const cardPopup = new PopupWithForm(config.popupAddCardSelector, (cardData) => {
     .addCard(cardData)
     .then((res) => {
       cardData._id = res._id;
-      cardDara.isLiked = false;
+      cardData.isLiked = false;
       const cardElement = createCard(cardData);
       cardList.addItem(cardElement, false);
     })
