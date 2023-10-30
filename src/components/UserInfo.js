@@ -1,21 +1,14 @@
 export default class UserInfo {
-  constructor(
-    { profileNameSelector, profileDescriptionSelector, profileAvatarSelector },
-    changeAvatarHandler
-  ) {
+  constructor({
+    profileNameSelector,
+    profileDescriptionSelector,
+    profileAvatarSelector,
+  }) {
     this._profileTitle = document.querySelector(profileNameSelector);
     this._profileDescription = document.querySelector(
       profileDescriptionSelector
     );
     this._profileAvatar = document.querySelector(profileAvatarSelector);
-    this._handleChangeAvatarClick = changeAvatarHandler;
-    this._setEventListeners();
-  }
-
-  _setEventListeners() {
-    this._profileAvatar.addEventListener("click", () => {
-      this._handleChangeAvatarClick(this);
-    });
   }
 
   getUserInfo() {

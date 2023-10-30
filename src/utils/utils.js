@@ -30,6 +30,8 @@ export const config = {
   popupDeleteCardSelector: "card-delete-modal",
   popupChangeAvatarSelector: "profile-change-avatar-link",
   buttonCloseSelector: ".modal__close",
+  avatarChangeForm: "profile-change-avatar-link-form",
+  confirmCardDeleteForm: "card-delete-confirm-form",
 };
 
 export const formValidators = {};
@@ -45,3 +47,8 @@ export const profileAddButton = document.querySelector(
 );
 export const cardAddForm = document.forms[config.cardAddForm];
 export const formList = [...document.querySelectorAll(config.formSelector)];
+
+export const profileAvatar = document.querySelector(
+  config.profileAvatarSelector
+);
+export const avatarChangeForm = document.forms[config.avatarChangeForm];

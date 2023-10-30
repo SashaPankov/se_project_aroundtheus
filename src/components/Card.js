@@ -1,13 +1,15 @@
-import { api } from "./Api.js";
-
 export default class Card {
-  constructor({ data, handleCardClick, handleDeleteCardClick }, cardSelector) {
+  constructor(
+    { data, handleCardClick, handleDeleteCardClick, handleLikeClick },
+    cardSelector
+  ) {
     this._id = data._id;
     this._name = data.name;
     this._imageLink = data.link;
     this._isLiked = data.isLiked;
     this._handleCardClick = handleCardClick;
     this._handleDeleteCardClick = handleDeleteCardClick;
+    this._handleLikeClick = handleLikeClick;
 
     this._cardSelector = cardSelector;
   }
@@ -25,10 +27,10 @@ export default class Card {
   }
 
   _changeLike() {
-    this._cardLikeElement.classList.toggle("card__like-button_active");
-    this._cardLikeElement.classList.contains("card__like-button_active")
-      ? api.likeCard(this.getCardData())
-      : api.dislikeCard(this.getCardData());
+    this._handleLikeClick(this.getCardData()).then((res) => {
+      this._isLiked = !this._isLiked;
+      this._cardLikeElement.classList.toggle("card__like-button_active");
+    });
   }
 
   _getCardTemplate() {
@@ -66,6 +68,7 @@ export default class Card {
       _id: this._id,
       link: this._imageLink,
       name: this._name,
+      isLiked: this._isLiked,
     };
   }
 

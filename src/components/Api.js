@@ -3,21 +3,16 @@ class Api {
     // constructor body
     this._baseUrl = options.baseUrl;
     this._headers = options.headers;
-    this._spinner = document.querySelector(".spinner");
   }
 
   _sendRequest(root, options) {
-    return fetch(`${this._baseUrl}${root}`, options)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
+    return fetch(`${this._baseUrl}${root}`, options).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
 
-        return Promise.reject(`Error: ${res.status}`);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      return Promise.reject(`Error: ${res.status}`);
+    });
   }
 
   getInitialCards() {
@@ -66,16 +61,10 @@ class Api {
     });
   }
 
-  likeCard(cardData) {
+  toggleLike(cardData) {
+    const methodType = cardData.isLiked ? "DELETE" : "PUT";
     return this._sendRequest(`/cards/${cardData._id}/likes`, {
-      method: "PUT",
-      headers: this._headers,
-    });
-  }
-
-  dislikeCard(cardData) {
-    return this._sendRequest(`/cards/${cardData._id}/likes`, {
-      method: "DELETE",
+      method: methodType,
       headers: this._headers,
     });
   }

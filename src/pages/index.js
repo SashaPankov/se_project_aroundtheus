@@ -6,6 +6,8 @@ import {
   profileAddButton,
   cardAddForm,
   formList,
+  avatarChangeForm,
+  profileAvatar,
 } from "../utils/utils.js";
 import Card from "../components/Card.js";
 import FormValidator from "../components/FormValidator.js";
@@ -25,6 +27,7 @@ const createCard = (cardData) => {
       data: cardData,
       handleCardClick: showImageModal,
       handleDeleteCardClick: deleteCardClick,
+      handleLikeClick: likeCardClick,
     },
     config.cardSelector
   );
@@ -52,59 +55,78 @@ const deleteCardClick = (card) => {
   cardDeletePopup.open();
 };
 
-const changeProfileAvatar = (userInfo) => {
+const likeCardClick = (cardData) => {
+  return api.toggleLike(cardData).catch((err) => {
+    alert(err);
+  });
+};
+
+const changeProfileAvatar = () => {
   changeAvatarPopup.setInputValues(userInfo.getUserInfo());
+  formValidators[avatarChangeForm.getAttribute("name")].resetValidation();
   changeAvatarPopup.open();
 };
 
 // Event Listeners
 profileEditButton.addEventListener("click", addProfileEditPopup);
 profileAddButton.addEventListener("click", addCardPopup);
+profileAvatar.addEventListener("click", changeProfileAvatar);
 
 // creating class instances and initializing
-const userInfo = new UserInfo(config, changeProfileAvatar);
+const userInfo = new UserInfo(config);
 
 const imagePopup = new PopupWithImage(config.popupImageSelector);
 imagePopup.setEventListeners();
 
+function handleSubmit(request, popupInstance, loadingText = "Saving...") {
+  popupInstance.renderLoading(true, loadingText);
+  request()
+    .then(() => {
+      popupInstance.close();
+    })
+    .catch((err) => {
+      alert(err);
+    })
+    .finally(() => {
+      popupInstance.renderLoading(false);
+    });
+}
+
 const profilePopup = new PopupWithForm(
   config.popupProfileSelector,
   (userData) => {
-    userInfo.setUserInfo(userData);
-    profilePopup.notifyUserSaving(true);
-    api.updateUserInfo(userData).finally(() => {
-      profilePopup.notifyUserSaving(false);
-      profilePopup.close();
-    });
+    function makeRequest() {
+      return api.updateUserInfo(userData).then((res) => {
+        userInfo.setUserInfo(userData);
+      });
+    }
+    handleSubmit(makeRequest, profilePopup);
   }
 );
 profilePopup.setEventListeners();
 
 const cardPopup = new PopupWithForm(config.popupAddCardSelector, (cardData) => {
-  cardPopup.notifyUserSaving(true);
-  api
-    .addCard(cardData)
-    .then((res) => {
+  function makeRequest() {
+    return api.addCard(cardData).then((res) => {
       cardData._id = res._id;
       cardData.isLiked = false;
       const cardElement = createCard(cardData);
       cardList.addItem(cardElement, false);
-    })
-    .finally(() => {
-      cardPopup.notifyUserSaving(false);
-      cardPopup.close();
     });
+  }
+  handleSubmit(makeRequest, cardPopup);
 });
 cardPopup.setEventListeners();
 
 const cardDeletePopup = new PopupWithForm(
   config.popupDeleteCardSelector,
   (cardData) => {
-    api.deleteCard(cardData).finally(() => {
-      cardDeletePopup.close();
-      cardToDelete.deleteCard();
-      cardToDelete = null;
-    });
+    function makeRequest() {
+      return api.deleteCard(cardData).then((res) => {
+        cardToDelete.deleteCard();
+      });
+    }
+    handleSubmit(makeRequest, cardDeletePopup, "Deleting...");
   }
 );
 cardDeletePopup.setEventListeners();
@@ -112,34 +134,44 @@ cardDeletePopup.setEventListeners();
 const changeAvatarPopup = new PopupWithForm(
   config.popupChangeAvatarSelector,
   (userData) => {
-    changeAvatarPopup.notifyUserSaving(true);
-    api.changeAvatar(userData).finally(() => {
-      changeAvatarPopup.notifyUserSaving(true);
-      changeAvatarPopup.close();
-      const allUserData = userInfo.getUserInfo();
-      allUserData.avatar = userData.avatar;
-      userInfo.setUserInfo(allUserData);
-    });
+    function makeRequest() {
+      return api.changeAvatar(userData).then((res) => {
+        const allUserData = userInfo.getUserInfo();
+        allUserData.avatar = userData.avatar;
+        userInfo.setUserInfo(allUserData);
+      });
+    }
+    handleSubmit(makeRequest, changeAvatarPopup);
   }
 );
 changeAvatarPopup.setEventListeners();
 
-api.getUserInfo().then((userData) => {
-  userInfo.setUserInfo(userData);
-});
+api
+  .getUserInfo()
+  .then((userData) => {
+    userInfo.setUserInfo(userData);
+  })
+  .catch((err) => {
+    alert(err);
+  });
 
-api.getInitialCards().then((cards) => {
-  cardList = new Section(
-    {
-      items: cards,
-      renderer: (cardData) => {
-        cardList.addItem(createCard(cardData));
+api
+  .getInitialCards()
+  .then((cards) => {
+    cardList = new Section(
+      {
+        items: cards,
+        renderer: (cardData) => {
+          cardList.addItem(createCard(cardData));
+        },
       },
-    },
-    config.cardsContainer
-  );
-  cardList.renderItems();
-});
+      config.cardsContainer
+    );
+    cardList.renderItems();
+  })
+  .catch((err) => {
+    alert(err);
+  });
 
 // adding validation to forms
 const enableValidation = (config) => {
@@ -147,7 +179,7 @@ const enableValidation = (config) => {
     formElement.addEventListener("submit", (evt) => {
       evt.preventDefault();
     });
-    if (!(formElement.getAttribute("name") === "card-delete-confirm-form")) {
+    if (!(formElement.getAttribute("name") === config.confirmCardDeleteForm)) {
       const formValidator = new FormValidator(config, formElement);
       formValidators[formElement.getAttribute("name")] = formValidator;
       formValidator.enableValidation();
