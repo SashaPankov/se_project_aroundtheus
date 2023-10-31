@@ -19,7 +19,6 @@ import { api } from "../components/Api.js";
 import "./index.css";
 
 let cardList = null;
-let cardToDelete = null;
 
 const createCard = (cardData) => {
   const newCard = new Card(
@@ -51,7 +50,7 @@ const showImageModal = (card) => {
 
 const deleteCardClick = (card) => {
   cardDeletePopup.setInputValues(card.getCardData());
-  cardToDelete = card;
+  cardDeletePopup.cardToDelete = card;
   cardDeletePopup.open();
 };
 
@@ -123,7 +122,7 @@ const cardDeletePopup = new PopupWithForm(
   (cardData) => {
     function makeRequest() {
       return api.deleteCard(cardData).then((res) => {
-        cardToDelete.deleteCard();
+        cardDeletePopup.cardToDelete.deleteCard();
       });
     }
     handleSubmit(makeRequest, cardDeletePopup, "Deleting...");
@@ -136,9 +135,7 @@ const changeAvatarPopup = new PopupWithForm(
   (userData) => {
     function makeRequest() {
       return api.changeAvatar(userData).then((res) => {
-        const allUserData = userInfo.getUserInfo();
-        allUserData.avatar = userData.avatar;
-        userInfo.setUserInfo(allUserData);
+        userInfo.setUserInfo(res);
       });
     }
     handleSubmit(makeRequest, changeAvatarPopup);
